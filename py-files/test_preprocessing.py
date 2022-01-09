@@ -95,3 +95,6 @@ class TestPreprocessing(unittest.TestCase):
         expected = 'klasyfikacja tekst wykorzystać uczyć maszynowy'
         df_expected = pd.DataFrame([[expected]], columns=['Text'])
         self.assertEqual(preprocessing_functions.lemmatize(df_input)['Text'].iloc[0], df_expected['Text'].iloc[0])
+
+if __name__ == '__main__':
+    unittest.main()
