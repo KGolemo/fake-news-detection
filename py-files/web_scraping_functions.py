@@ -18,10 +18,11 @@ def get_verifications(page: int) -> Dict[str, str]:
     Returns:
         verifications (Dict[str, str]): Dictionary of web page content.
     """
-    url = 'https://panel-api.fakehunter.pap.pl/news/published/news?category=koronawirus&domains%5B%5D=koronawirus&page=' + str(page)
+    url = 'https://panel-api.fakehunter.pap.pl/news/' \
+          'published/news?category=koronawirus&domains%5B%5D=koronawirus&page=' + str(page)
     # print(f'Processing page {page}: {url}')
-    res = requests.get(url)  
-    res.encoding = 'utf-8'                            
+    res = requests.get(url)
+    res.encoding = 'utf-8'
     data = res.json()
     verifications = data['results']
     return verifications
@@ -42,9 +43,10 @@ def extract_text_from_image(url: str) -> str:
     res = requests.get(url)
     arr = np.asarray(bytearray(res.content), dtype=np.uint8)
     img = cv2.imdecode(arr, -1)
-    result = reader.readtext(img, decoder='beamsearch', detail=0, 
-                            paragraph=True, y_ths=4, min_size=200, width_ths=1, 
-                            allowlist='#0123456789ABCDEFGHIJKLŁMNOPRSŚTUVWXYZŻŹaąbcćdeęfghijklłmnńoóprstuwyzżź .,-?:-!"()')
+    allowlist = '#0123456789ABCDEFGHIJKLŁMNOPRSŚTUVWXYZŻŹaąbcćdeęfghijklłmnńoóprstuwyzżź .,-?:-!"()'
+    result = reader.readtext(img, decoder='beamsearch', detail=0,
+                             paragraph=True, y_ths=4, min_size=200, width_ths=1,
+                             allowlist=allowlist)
     text = ' '.join(result)
     return text
 
@@ -80,7 +82,7 @@ def extract_text_from_article(url: str) -> Tuple[str, str]:
             text (str): Article's content.
     """
     res = requests.get(url)
-    res.encoding = 'utf-8'                             
+    res.encoding = 'utf-8'
     soup_art = BeautifulSoup(res.text, 'html.parser')
     title = soup_art.find('div', attrs={'class': 'pageTitle'}).text
     try:

@@ -77,7 +77,7 @@ def drop_twitter(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         pd.Dataframe: News dataset without noisy twitter news.
     """
-    return df[df['Text'].str.contains('Nowy na Twitterze')==False]
+    return df[df['Text'].str.contains('Nowy na Twitterze') == 0]
 
 
 def change_verdict_dtype(df: pd.DataFrame) -> pd.DataFrame:
@@ -143,7 +143,7 @@ def replace_whitespace(text: str) -> str:
     Returns:
         ret_text (str): Processed article.
     """
-    reg = re.compile('\s+')
+    reg = re.compile(r'\s+')
     ret_text = reg.sub(' ', text)
     return ret_text
 
@@ -174,7 +174,7 @@ def tokenize(text: str) -> List[str]:
     return ret_text
 
 
-def delete_stop_words(text: str) -> List[str]:
+def delete_stop_words(text: List[str]) -> List[str]:
     """Removes stopwords.
 
     Args:
@@ -183,7 +183,7 @@ def delete_stop_words(text: str) -> List[str]:
     Returns:
         ret_text (str): Processed article.
     """
-    stop_words_txt = open('stopwords.txt')
+    stop_words_txt = open('py-files/stopwords.txt')
     stop_words = stop_words_txt.read().split('\n')
     stop_words_txt.close()
     ret_text = [word for word in text if word not in stop_words]

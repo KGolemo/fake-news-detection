@@ -14,7 +14,8 @@ class TestWebScraping(unittest.TestCase):
         self.assertTrue(set(a).issuperset(set(b)))
 
     def test_extract_text_from_image(self):
-        result = web_scraping_functions.extract_text_from_image('https://sfnf-collector-prod.s3.amazonaws.com/image_20210519_100444_116126')
+        url = 'https://sfnf-collector-prod.s3.amazonaws.com/image_20210519_100444_116126'
+        result = web_scraping_functions.extract_text_from_image(url)
         expected = 'Krasnostawski lek na KORONAWIRUSA SKUTECZNE SPRAWDŹ TERAZ!'
         self.assertEqual(result, expected)
 
@@ -24,11 +25,12 @@ class TestWebScraping(unittest.TestCase):
         self.assertIn('https://www.termedia.pl/koronawirus', result[0])
 
     def test_extract_text_from_article(self):
-        result = web_scraping_functions.extract_text_from_article('https://www.termedia.pl/koronawirus/Do-Polski-trafil-doustny-molnupirawir,45095.html')
+        url = 'https://www.termedia.pl/koronawirus/Do-Polski-trafil-doustny-molnupirawir,45095.html'
+        result = web_scraping_functions.extract_text_from_article(url)
         self.assertEqual(tuple, type(result))
         self.assertEqual(str, type(result[0]))
         self.assertEqual(str, type(result[1]))
 
+
 if __name__ == '__main__':
     unittest.main()
-    
