@@ -8,10 +8,10 @@ Praca inżynierska
 4. Ekstrakcja cech i zastosowanie klasyfikatorów - *jupyter-notebooks/modeling.ipynb*
 
 ## Dokumentacja
-[Dokumentacja](https://kair-isz-nlp.github.io/fake-news-detection/)
+[Tutaj](https://kair-isz-nlp.github.io/fake-news-detection/) dostępna jest dokumentacja.
 
 ## Aplikacja
-[Aplikacja]()
-[Repozytorium](https://github.com/KGolemo/dash-app-fake-news-detection)
+[Tutaj](https://fake-news-detection-dash-app.herokuapp.com/) widoczna jest aplikacja.
+[Tutaj](https://github.com/KGolemo/dash-app-fake-news-detection) znajduje się jej repozytorium.
 
 ## Licencja
