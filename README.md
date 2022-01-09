@@ -7,6 +7,9 @@ Praca inżynierska
 3. Przetwarzanie danych - *jupyter-notebooks/data_preprocessing.ipynb*
 4. Ekstrakcja cech i zastosowanie klasyfikatorów - *jupyter-notebooks/modeling.ipynb*
 
+## Dokumentacja
+[Dokumentacja](https://kair-isz-nlp.github.io/fake-news-detection/)
+
 ## Aplikacja
 [Aplikacja]()
 [Repozytorium](https://github.com/KGolemo/dash-app-fake-news-detection)
