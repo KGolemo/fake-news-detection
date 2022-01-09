@@ -19,6 +19,263 @@
 <main>
 <article id="content">
 <header>
+<h1 class="title">Module <code>web_scraping_functions</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+import requests
+from bs4 import BeautifulSoup
+import numpy as np
+import cv2
+import easyocr
+from typing import Dict, List, Tuple
+
+
+def get_verifications(page: int) -&gt; Dict[str, str]:
+    &#34;&#34;&#34;Gets news verifications from fakehunter.pap.pl.
+
+    Args:
+        page (int): Page number of fakehunter.pap.pl to process.
+
+    Returns:
+        verifications (Dict[str, str]): Dictionary of web page content.
+    &#34;&#34;&#34;
+    url = &#39;https://panel-api.fakehunter.pap.pl/news/published/news?category=koronawirus&amp;domains%5B%5D=koronawirus&amp;page=&#39; + str(page)
+    # print(f&#39;Processing page {page}: {url}&#39;)
+    res = requests.get(url)  
+    res.encoding = &#39;utf-8&#39;                            
+    data = res.json()
+    verifications = data[&#39;results&#39;]
+    return verifications
+
+
+reader = easyocr.Reader([&#39;pl&#39;])  # Load the OCR Reader object
+
+
+def extract_text_from_image(url: str) -&gt; str:
+    &#34;&#34;&#34;Performs OCR on the screenshot of an article.
+
+    Args:
+        url (str): URL of the screenshot.
+
+    Returns:
+        text (str): Extracted text.
+    &#34;&#34;&#34;
+    res = requests.get(url)
+    arr = np.asarray(bytearray(res.content), dtype=np.uint8)
+    img = cv2.imdecode(arr, -1)
+    result = reader.readtext(img, decoder=&#39;beamsearch&#39;, detail=0, 
+                            paragraph=True, y_ths=4, min_size=200, width_ths=1, 
+                            allowlist=&#39;#0123456789ABCDEFGHIJKLŁMNOPRSŚTUVWXYZŻŹaąbcćdeęfghijklłmnńoóprstuwyzżź .,-?:-!&#34;()&#39;)
+    text = &#39; &#39;.join(result)
+    return text
+
+
+def get_articles_links(page: int) -&gt; List[str]:
+    &#34;&#34;&#34;Gets links to articles from termedia.pl.
+
+    Args:
+        page (int): Page number of termedia.pl to process.
+
+    Returns:
+        links (List[str]): List of links to articles.
+    &#34;&#34;&#34;
+    url = &#39;https://www.termedia.pl/koronawirus/?&amp;p=&#39; + str(page)
+    # print(f&#39;Processing page {page}: {url}&#39;)
+    res = requests.get(url)
+    res.encoding = &#39;utf-8&#39;
+    soup = BeautifulSoup(res.text, &#39;html.parser&#39;)
+    links = [&#39;https://www.termedia.pl&#39; + art.find(&#39;a&#39;)[&#39;href&#39;].strip()
+             for art in soup.find_all(&#39;div&#39;, attrs={&#39;class&#39;: &#39;pl2Pos&#39;})]
+    return links
+
+
+def extract_text_from_article(url: str) -&gt; Tuple[str, str]:
+    &#34;&#34;&#34;Gets the article&#39;s title and content.
+
+    Args:
+        url (str): URL of the article.
+
+    Returns:
+        (Tuple [str, str]): Tuple containing:
+            title (str): Article&#39;s title.
+            text (str): Article&#39;s content.
+    &#34;&#34;&#34;
+    res = requests.get(url)
+    res.encoding = &#39;utf-8&#39;                             
+    soup_art = BeautifulSoup(res.text, &#39;html.parser&#39;)
+    title = soup_art.find(&#39;div&#39;, attrs={&#39;class&#39;: &#39;pageTitle&#39;}).text
+    try:
+        text = &#39; &#39;.join([t.text for t in soup_art.find_all(&#39;div&#39;, attrs={&#39;class&#39;: &#39;articleContent&#39;})])
+    except AttributeError:
+        text = &#39;&#39;
+    return title, text</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="web_scraping_functions.extract_text_from_article"><code class="name flex">
+<span>def <span class="ident">extract_text_from_article</span></span>(<span>url: str) ‑> Tuple[str, str]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets the article's title and content.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>url</code></strong> :&ensp;<code>str</code></dt>
+<dd>URL of the article.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>(Tuple [str, str]): Tuple containing:
+title (str): Article's title.
+text (str): Article's content.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def extract_text_from_article(url: str) -&gt; Tuple[str, str]:
+    &#34;&#34;&#34;Gets the article&#39;s title and content.
+
+    Args:
+        url (str): URL of the article.
+
+    Returns:
+        (Tuple [str, str]): Tuple containing:
+            title (str): Article&#39;s title.
+            text (str): Article&#39;s content.
+    &#34;&#34;&#34;
+    res = requests.get(url)
+    res.encoding = &#39;utf-8&#39;                             
+    soup_art = BeautifulSoup(res.text, &#39;html.parser&#39;)
+    title = soup_art.find(&#39;div&#39;, attrs={&#39;class&#39;: &#39;pageTitle&#39;}).text
+    try:
+        text = &#39; &#39;.join([t.text for t in soup_art.find_all(&#39;div&#39;, attrs={&#39;class&#39;: &#39;articleContent&#39;})])
+    except AttributeError:
+        text = &#39;&#39;
+    return title, text</code></pre>
+</details>
+</dd>
+<dt id="web_scraping_functions.extract_text_from_image"><code class="name flex">
+<span>def <span class="ident">extract_text_from_image</span></span>(<span>url: str) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Performs OCR on the screenshot of an article.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>url</code></strong> :&ensp;<code>str</code></dt>
+<dd>URL of the screenshot.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>text (str): Extracted text.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def extract_text_from_image(url: str) -&gt; str:
+    &#34;&#34;&#34;Performs OCR on the screenshot of an article.
+
+    Args:
+        url (str): URL of the screenshot.
+
+    Returns:
+        text (str): Extracted text.
+    &#34;&#34;&#34;
+    res = requests.get(url)
+    arr = np.asarray(bytearray(res.content), dtype=np.uint8)
+    img = cv2.imdecode(arr, -1)
+    result = reader.readtext(img, decoder=&#39;beamsearch&#39;, detail=0, 
+                            paragraph=True, y_ths=4, min_size=200, width_ths=1, 
+                            allowlist=&#39;#0123456789ABCDEFGHIJKLŁMNOPRSŚTUVWXYZŻŹaąbcćdeęfghijklłmnńoóprstuwyzżź .,-?:-!&#34;()&#39;)
+    text = &#39; &#39;.join(result)
+    return text</code></pre>
+</details>
+</dd>
+<dt id="web_scraping_functions.get_articles_links"><code class="name flex">
+<span>def <span class="ident">get_articles_links</span></span>(<span>page: int) ‑> List[str]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets links to articles from termedia.pl.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>page</code></strong> :&ensp;<code>int</code></dt>
+<dd>Page number of termedia.pl to process.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>links (List[str]): List of links to articles.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_articles_links(page: int) -&gt; List[str]:
+    &#34;&#34;&#34;Gets links to articles from termedia.pl.
+
+    Args:
+        page (int): Page number of termedia.pl to process.
+
+    Returns:
+        links (List[str]): List of links to articles.
+    &#34;&#34;&#34;
+    url = &#39;https://www.termedia.pl/koronawirus/?&amp;p=&#39; + str(page)
+    # print(f&#39;Processing page {page}: {url}&#39;)
+    res = requests.get(url)
+    res.encoding = &#39;utf-8&#39;
+    soup = BeautifulSoup(res.text, &#39;html.parser&#39;)
+    links = [&#39;https://www.termedia.pl&#39; + art.find(&#39;a&#39;)[&#39;href&#39;].strip()
+             for art in soup.find_all(&#39;div&#39;, attrs={&#39;class&#39;: &#39;pl2Pos&#39;})]
+    return links</code></pre>
+</details>
+</dd>
+<dt id="web_scraping_functions.get_verifications"><code class="name flex">
+<span>def <span class="ident">get_verifications</span></span>(<span>page: int) ‑> Dict[str, str]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets news verifications from fakehunter.pap.pl.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>page</code></strong> :&ensp;<code>int</code></dt>
+<dd>Page number of fakehunter.pap.pl to process.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>verifications (Dict[str, str]): Dictionary of web page content.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_verifications(page: int) -&gt; Dict[str, str]:
+    &#34;&#34;&#34;Gets news verifications from fakehunter.pap.pl.
+
+    Args:
+        page (int): Page number of fakehunter.pap.pl to process.
+
+    Returns:
+        verifications (Dict[str, str]): Dictionary of web page content.
+    &#34;&#34;&#34;
+    url = &#39;https://panel-api.fakehunter.pap.pl/news/published/news?category=koronawirus&amp;domains%5B%5D=koronawirus&amp;page=&#39; + str(page)
+    # print(f&#39;Processing page {page}: {url}&#39;)
+    res = requests.get(url)  
+    res.encoding = &#39;utf-8&#39;                            
+    data = res.json()
+    verifications = data[&#39;results&#39;]
+    return verifications</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<!-- </article>
+<article id="content"> -->
+<header>
 <h1 class="title">Module <code>preprocessing_functions</code></h1>
 </header>
 <section id="section-intro">
@@ -690,12 +947,22 @@ def lemmatize(df: pd.DataFrame) -&gt; pd.DataFrame:
 </section>
 </article>
 <nav id="sidebar">
-<h1>Index</h1>
+<h1>Functions</h1>
 <div class="toc">
 <ul></ul>
 </div>
 <ul id="index">
-<li><h3><a href="#header-functions">Functions</a></h3>
+<li><h3><a href="#header-functions">web_scraping_functions</a></h3>
+<ul class="">
+<li><code><a title="web_scraping_functions.extract_text_from_article" href="#web_scraping_functions.extract_text_from_article">extract_text_from_article</a></code></li>
+<li><code><a title="web_scraping_functions.extract_text_from_image" href="#web_scraping_functions.extract_text_from_image">extract_text_from_image</a></code></li>
+<li><code><a title="web_scraping_functions.get_articles_links" href="#web_scraping_functions.get_articles_links">get_articles_links</a></code></li>
+<li><code><a title="web_scraping_functions.get_verifications" href="#web_scraping_functions.get_verifications">get_verifications</a></code></li>
+</ul>
+</li>
+</ul>
+<ul id="index">
+<li><h3><a href="#header-functions">preprocessing_functions</a></h3>
 <ul class="">
 <li><code><a title="preprocessing_functions.change_verdict_dtype" href="#preprocessing_functions.change_verdict_dtype">change_verdict_dtype</a></code></li>
 <li><code><a title="preprocessing_functions.delete_escape_chars" href="#preprocessing_functions.delete_escape_chars">delete_escape_chars</a></code></li>
