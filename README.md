@@ -9,5 +9,6 @@ Praca inżynierska
 
 ## Aplikacja
 [Aplikacja]()
+[Repozytorium](https://github.com/KGolemo/dash-app-fake-news-detection)
 
 ## Licencja
