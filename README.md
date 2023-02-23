@@ -12,5 +12,4 @@ The documentation is available [here](https://kair-isz-nlp.github.io/fake-news-d
 
 ## Web app
 Web app is available [here](https://fake-news-detection-dash-app.herokuapp.com/).
-
 Its repository can be found [here](https://github.com/KGolemo/dash-app-fake-news-detection).
